@@ -6,29 +6,125 @@
   <title>Document</title>
 
   <style >
+    body {
+      font-family: Helvetica;
+      font-size: 16px;
+      width: 100%;
+    }
+    .container {
+      width: 600px;
+      margin: 0 auto;
+      <!-- text-align: center; -->
+    }
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
 
+    }
+    input, button {
+      padding: 0.5em;
+      font-size: 1em;
+      border: 1px solid;
+      border-radius: 0.5em;
+    }
+    .update {
+      max-width: 95px;
+    }
+
+    button {
+      background-color: #000;
+      color: #fff;
+      max-width: 7em;
+    }
+
+    #item-list > li {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #cart-total {
+      font-size: 2em;
+      border-top: 1px solid;
+    }
   </style>
 
 </head>
 <body>
+  <div class="container">
+    <form action="" id="add-form" class="form add-form">
+      <label for="">Name: <input id="item-name" type="text" name="" value="" placeholder="Item Name"></label>
+      <label for="">Price: <input id="item-price" type="number" name="" value="" step="0.01" placeholder="Item Price"></label>
+      <button type="submit" name="button">Add Item</button>
 
-  <div id="cart-qty">
-  <!-- cart quantity -->
+    </form>
+
+    <div id="cart-qty">
+    <!-- cart quantity -->
+    </div>
+    <ul id="item-list">
+    <!-- cart items -->
+    </ul>
+    <div id="cart-total">
+    <!-- cart total -->
+    </div>
+
   </div>
-  <ul id="item-list">
-  <!-- cart items -->
-  </ul>
-  <div id="cart-total">
-  <!-- cart total -->
-  </div>
-
-
   <script>
     const itemList = document.getElementById('item-list')
     const cartQty = document.getElementById('cart-qty')
     const cartTotal = document.getElementById('cart-total')
+    const addForm = document.getElementById('add-form')
+    const itemName = document.getElementById('item-name')
+    const itemPrice = document.getElementById('item-price')
 
     const cart = []
+    // ------------------------------------------
+    // Handle Change events on update input
+
+    itemList.onchange = function(e) {
+      if (e.target && e.target.classList.contains(`update`)) {
+        const name = e.target.dataset.name
+        const qty = parseInt(e.target.value)
+        console.log(name)
+        console.log(qty)
+
+
+        updateCart(name, qty)
+
+
+      }
+    }
+
+    // ------------------------------------------
+    <!-- handle cliks on list -->
+    itemList.onclick = function(e) {
+      if (e.target && e.target.classList.contains('remove')) {
+          const name = e.target.dataset.name // data-name
+          removeItem(name)
+      }
+      else if (e.target && e.target.classList.contains('add-one')) {
+          const name = e.target.dataset.name // data-name
+          addItem(name)
+      }
+      else if (e.target && e.target.classList.contains('remove-one')) {
+        const name = e.target.dataset.name // data-name
+        removeItem(name, 1)
+      }
+    }
+
+
+
+
+    // ------------------------------------------
+    <!-- handle  Add form -->
+    addForm.onsubmit = function(e) {
+      e.preventDefault()
+      const name = itemName.value
+      const price = itemPrice.value
+      addItem(name, price)
+    }
 
     // ------------------------------------------
     //Add item
@@ -36,13 +132,14 @@
       for (let i = 0; i < cart.length; i++) {
         if (cart[i].name === name) {
           cart[i].qty +=1
+          showItems()
           return
         }
       }
 
       let item = {name, price, qty: 1}
       cart.push(item)
-
+      showItems()
     }
     // ------------------------------------------
     // Show item
@@ -58,11 +155,20 @@
       for (let i = 0; i < cart.length; i++) {
         itemTotal += cart[i].price * cart[i].qty
         const {name, price, qty } = cart[i]
-        itemStr += `<li> ${name} $${price} x ${qty} = $${price*qty}</li>`
+        itemStr += `<li>
+                      <span>
+                        ${name} $${price} x ${qty} = $${(price*qty).toFixed(2)}
+                      </span>
+                      <span>
+                        <button class="remove" data-name="${name}">Remove</button>
+                        <button class="add-one" data-name="${name}">  +  </button>
+                        <input class="update" type="number" data-name="${name}" placeholder="Quantity">
+                        <button class="remove-one" data-name="${name}">  -  </button>
+                      </span>
+                    </li>`
       }
-      cartTotal.innerHTML = `Total price: ${itemTotal}`
+      cartTotal.innerHTML = `Total price: $${itemTotal.toFixed(2)}`
       itemList.innerHTML = itemStr
-      console.log(`Total price: $${total}`)
 
     }
 
@@ -79,11 +185,31 @@
           if (cart[i].qty < 1 || qty === 0) {
             cart.splice(i, 1)
           }
+          showItems()
 
           return
         }
       }
     }
+    // ------------------------------------------
+    // update cart
+    function updateCart(name, qty) {
+      for (let i=0; i < cart.length; i++) {
+        if (cart[i].name === name) {
+          if (qty < 1) {
+            removeItem(name)
+            return
+          }
+          cart[i].qty = qty
+          showItems()
+          return
+        }
+      }
+    }
+
+
+
+
 
     // ------------------------------------------
     // get quantity
@@ -106,18 +232,7 @@
     }
 
     // ------------------------------------------
-    addItem("Orange", 1.29)
-    addItem("Apple", 0.99)
-    addItem("Apple", 0.99)
-    addItem("Orange", 1.29)
-    addItem("Pinaapple", 1.99)
-    addItem("Orange", 1.29)
-    addItem("Banana", 1.89)
-    showItems()
-    removeItem("Orange", 1)
-    showItems()
-    removeItem("Apple")
-    showItems()
+
   </script>
 </body>
 </html>
