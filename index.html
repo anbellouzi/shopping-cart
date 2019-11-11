@@ -1,0 +1,123 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+
+  <style >
+
+  </style>
+
+</head>
+<body>
+
+  <div id="cart-qty">
+  <!-- cart quantity -->
+  </div>
+  <ul id="item-list">
+  <!-- cart items -->
+  </ul>
+  <div id="cart-total">
+  <!-- cart total -->
+  </div>
+
+
+  <script>
+    const itemList = document.getElementById('item-list')
+    const cartQty = document.getElementById('cart-qty')
+    const cartTotal = document.getElementById('cart-total')
+
+    const cart = []
+
+    // ------------------------------------------
+    //Add item
+    function addItem(name, price) {
+      for (let i = 0; i < cart.length; i++) {
+        if (cart[i].name === name) {
+          cart[i].qty +=1
+          return
+        }
+      }
+
+      let item = {name, price, qty: 1}
+      cart.push(item)
+
+    }
+    // ------------------------------------------
+    // Show item
+    function showItems() {
+      qty = getQty()
+      total = getTotalPrice()
+
+      console.log(`You have ${qty} items in your shoppoping cart`)
+      cartQty.innerHTML = `You have ${qty} items in your shoppoping cart`
+      let itemStr = ''
+      let itemTotal = 0
+
+      for (let i = 0; i < cart.length; i++) {
+        itemTotal += cart[i].price * cart[i].qty
+        const {name, price, qty } = cart[i]
+        itemStr += `<li> ${name} $${price} x ${qty} = $${price*qty}</li>`
+      }
+      cartTotal.innerHTML = `Total price: ${itemTotal}`
+      itemList.innerHTML = itemStr
+      console.log(`Total price: $${total}`)
+
+    }
+
+    // ------------------------------------------
+    // remove item
+    function removeItem(name, qty=0) {
+      for (let i = 0; i < cart.length; i++) {
+        if ( cart[i].name === name) {
+          if (qty > 0) {
+            cart[i].qty -= qty
+          }
+
+
+          if (cart[i].qty < 1 || qty === 0) {
+            cart.splice(i, 1)
+          }
+
+          return
+        }
+      }
+    }
+
+    // ------------------------------------------
+    // get quantity
+    function getQty() {
+      var quantity = 0
+      for (let i = 0; i < cart.length; i++) {
+          quantity += cart[i].qty
+      }
+      return quantity
+    }
+
+    // ------------------------------------------
+    // get total
+    function getTotalPrice() {
+      var total = 0
+      for (let i = 0; i < cart.length; i++) {
+          total += cart[i].price * cart[i].qty
+      }
+      return total.toFixed(2)
+    }
+
+    // ------------------------------------------
+    addItem("Orange", 1.29)
+    addItem("Apple", 0.99)
+    addItem("Apple", 0.99)
+    addItem("Orange", 1.29)
+    addItem("Pinaapple", 1.99)
+    addItem("Orange", 1.29)
+    addItem("Banana", 1.89)
+    showItems()
+    removeItem("Orange", 1)
+    showItems()
+    removeItem("Apple")
+    showItems()
+  </script>
+</body>
+</html>
